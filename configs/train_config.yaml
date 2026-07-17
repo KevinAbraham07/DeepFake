@@ -1,0 +1,11 @@
+model:
+  name: "dummy_cnn"
+  in_channels: 3
+  hidden_dim: 16
+  num_classes: 1
+
+training:
+  epochs: 5
+  batch_size: 32
+  learning_rate: 0.001
+  save_dir: "./checkpoints"
