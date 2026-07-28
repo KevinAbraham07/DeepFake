@@ -5,7 +5,7 @@ from core.base_model import BaseDeepfakeDetector
 @register_model("resnet_detector")
 class ResNetDetector(BaseDeepfakeDetector):
     def __init__(self, config):
-        super().__init__()
+        super().__init__(config)
         
         # We lazy-import torchvision here so it doesn't crash your local Windows API 
         # (due to the numpy/dynamo bug). On Kaggle (Linux), this will import perfectly!
