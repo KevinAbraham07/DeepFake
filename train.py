@@ -67,15 +67,13 @@ def main():
     # IMPORTANT: On Kaggle, you would change './dataset' to '/kaggle/input/dataset_name'
     dataset_path = args.dataset_path
     
-    # We use a dummy dataset here to prevent crashes if the folder doesn't exist
-    # In reality, you'd ensure the folder structure exists first.
-    os.makedirs(os.path.join(dataset_path, "real"), exist_ok=True)
-    os.makedirs(os.path.join(dataset_path, "fake"), exist_ok=True)
-    
     dataset = DeepfakeImageDataset(
         root_dir=dataset_path,
         transform=get_default_transforms()
     )
+    
+    if len(dataset) == 0:
+        raise ValueError(f"No images found in {dataset_path}! Make sure this directory contains 'real/' and 'fake/' folders with images.")
     
     # The DataLoader is the magic that handles massive datasets by chunking them into 'batches'
     dataloader = DataLoader(
