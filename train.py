@@ -49,7 +49,13 @@ def train_one_epoch(model, dataloader, criterion, optimizer, device, epoch):
         running_loss += loss.item()
         progress_bar.set_postfix({'loss': running_loss / (progress_bar.n + 1)})
 
+import argparse
+
 def main():
+    parser = argparse.ArgumentParser(description="Train Deepfake Detector")
+    parser.add_argument('--dataset_path', type=str, default='./dataset', help='Path to the dataset directory')
+    args = parser.parse_args()
+    
     # 1. Setup Device (This automatically uses Kaggle's GPU if running there!)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Training on device: {device}")
@@ -59,7 +65,7 @@ def main():
     
     # 3. Create Dataset and DataLoader
     # IMPORTANT: On Kaggle, you would change './dataset' to '/kaggle/input/dataset_name'
-    dataset_path = "./dataset" 
+    dataset_path = args.dataset_path
     
     # We use a dummy dataset here to prevent crashes if the folder doesn't exist
     # In reality, you'd ensure the folder structure exists first.
