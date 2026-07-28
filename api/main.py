@@ -7,6 +7,7 @@ from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 from core.registry import get_model
+import models  # <--- This triggers the registry!
 from data.dataset import get_default_transforms
 from api.schemas import PredictionResponse
 

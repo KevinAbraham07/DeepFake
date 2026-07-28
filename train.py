@@ -7,6 +7,7 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 
 from core.registry import get_model
+import models
 from data.dataset import DeepfakeImageDataset, get_default_transforms
 
 def load_config(config_path):

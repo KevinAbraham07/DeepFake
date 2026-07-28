@@ -1,7 +1,8 @@
 import os
 from PIL import Image
+import torch
 from torch.utils.data import Dataset
-import torchvision.transforms as transforms
+import numpy as np
 
 class DeepfakeImageDataset(Dataset):
     """
@@ -20,19 +21,18 @@ class DeepfakeImageDataset(Dataset):
         self.image_paths = []
         self.labels = []
         
-        # Determine paths and labels (0 for real, 1 for fake)
         real_dir = os.path.join(root_dir, 'real')
         fake_dir = os.path.join(root_dir, 'fake')
         
         if os.path.exists(real_dir):
             for img_name in os.listdir(real_dir):
                 self.image_paths.append(os.path.join(real_dir, img_name))
-                self.labels.append(0.0) # Real
+                self.labels.append(0.0)
                 
         if os.path.exists(fake_dir):
             for img_name in os.listdir(fake_dir):
                 self.image_paths.append(os.path.join(fake_dir, img_name))
-                self.labels.append(1.0) # Fake
+                self.labels.append(1.0)
                 
     def __len__(self):
         return len(self.image_paths)
@@ -49,11 +49,20 @@ class DeepfakeImageDataset(Dataset):
 
 def get_default_transforms(image_size=256):
     """
-    Returns standard torchvision transforms for image preprocessing.
+    Custom image transformation avoiding torchvision to prevent dynamo bugs on Windows.
     """
-    return transforms.Compose([
-        transforms.Resize((image_size, image_size)),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406], # Standard ImageNet mean/std
-                             std=[0.229, 0.224, 0.225])
-    ])
+    def transform(image):
+        # Resize
+        image = image.resize((image_size, image_size))
+        # Convert to tensor and scale to [0, 1]
+        arr = np.array(image, dtype=np.float32) / 255.0
+        # Change shape from (H, W, C) to (C, H, W)
+        arr = arr.transpose(2, 0, 1)
+        tensor = torch.tensor(arr)
+        
+        # Normalize
+        mean = torch.tensor([0.485, 0.456, 0.406]).view(3, 1, 1)
+        std = torch.tensor([0.229, 0.224, 0.225]).view(3, 1, 1)
+        return (tensor - mean) / std
+        
+    return transform

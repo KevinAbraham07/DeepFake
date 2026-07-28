@@ -1,7 +1,7 @@
 model:
-  name: "dummy_cnn"
-  in_channels: 3
-  hidden_dim: 16
+  name: "resnet_detector"
+  freeze_backbone: true
+  dropout_rate: 0.5
   num_classes: 1
 
 training:
