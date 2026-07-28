@@ -54,6 +54,8 @@ import argparse
 def main():
     parser = argparse.ArgumentParser(description="Train Deepfake Detector")
     parser.add_argument('--dataset_path', type=str, default='./dataset', help='Path to the dataset directory')
+    parser.add_argument('--resume', type=str, default=None, help='Path to checkpoint .pth file to resume from')
+    parser.add_argument('--start_epoch', type=int, default=1, help='Epoch number to resume from (e.g. 2 if epoch 1 is done)')
     args = parser.parse_args()
     
     # 1. Setup Device (This automatically uses Kaggle's GPU if running there!)
@@ -64,7 +66,6 @@ def main():
     config = load_config("configs/train_config.yaml")
     
     # 3. Create Dataset and DataLoader
-    # IMPORTANT: On Kaggle, you would change './dataset' to '/kaggle/input/dataset_name'
     dataset_path = args.dataset_path
     
     dataset = DeepfakeImageDataset(
@@ -93,13 +94,20 @@ def main():
     criterion = nn.BCEWithLogitsLoss() 
     optimizer = optim.Adam(model.parameters(), lr=config["training"]["learning_rate"])
     
+    # 5b. Resume from checkpoint if provided
+    if args.resume:
+        print(f"Resuming from checkpoint: {args.resume}")
+        model.load_state_dict(torch.load(args.resume, map_location=device))
+        print("Checkpoint loaded successfully!")
+    
     # 6. The Training Loop
     epochs = config["training"]["epochs"]
     save_dir = config["training"]["save_dir"]
     os.makedirs(save_dir, exist_ok=True)
     
-    print("\nStarting Training...")
-    for epoch in range(1, epochs + 1):
+    start_epoch = args.start_epoch
+    print(f"\nStarting Training from Epoch {start_epoch}...")
+    for epoch in range(start_epoch, epochs + 1):
         train_one_epoch(model, dataloader, criterion, optimizer, device, epoch)
         
         # Save a checkpoint after every epoch
