@@ -1,0 +1,11 @@
+model:
+  name: "resnet_detector"
+  freeze_backbone: true
+  dropout_rate: 0.5
+  num_classes: 1
+
+training:
+  epochs: 5
+  batch_size: 32
+  learning_rate: 0.001
+  save_dir: "./checkpoints"
