@@ -1,0 +1,31 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# PyTorch Checkpoints and Large Weights
+checkpoints/
+*.pth
+*.pt
+*.onnx
+*.safetensors
+
+# Environment & Virtualenvs
+venv/
+.venv/
+env/
+
+# Data directories
+dataset/
+data/raw/
+
+# Node / Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.nx/
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
